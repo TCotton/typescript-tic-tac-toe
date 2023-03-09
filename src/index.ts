@@ -5,20 +5,49 @@ const boardElement = document.getElementById("board");
 const ROW_COUNT = 3;
 const COL_COUNT = 3;
 
-let boardState = [
+type CellContent = "X" | "O" | "";
+type BoardState = [
+    [CellContent, CellContent, CellContent],
+    [CellContent, CellContent, CellContent],
+    [CellContent, CellContent, CellContent]
+]
+let boardState:BoardState = [
   ["", "", ""],
   ["", "", ""],
   ["", "", ""]
 ];
-let currentMove = "X";
+let currentMove: "X" | "O" = "X";
+let winner: CellContent | "Draw" = "";
 
-function createCell(row, col, content = "") {
+function createCell(row: number, col: number, content = "") {
   const cell = document.createElement("button");
   cell.setAttribute("data-row", row.toString());
   cell.setAttribute("data-col", col.toString());
   cell.setAttribute("data-content", content);
   cell.classList.add("cell");
+  cell.addEventListener("click", () => {
+    if (boardState[row][col] === "") {
+        boardState[row][col] = currentMove;
+        currentMove = currentMove === "X" ? "O" : "X";
+        winner = checkBoard()
+        renderBoard();
+    }
+  });
   return cell;
+}
+
+function checkBoard(): CellContent | "Draw" {
+  let isDraw = true;
+    for (let i = 0; i < ROW_COUNT; i++) {
+        for (let j = 0; j < COL_COUNT; j++) {
+            if (boardState[i][j] === "") {
+                isDraw = false;
+            }
+        }
+    }
+    if (isDraw) {
+        return "Draw";
+    }
 }
 
 function renderBoard() {
